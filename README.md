@@ -10,6 +10,16 @@ the site and proxies the xAI (Grok) recommendation calls.
 
 ---
 
+## The build specification
+
+`docs/build-spec.html` is the specification a developer builds the production platform from:
+features split by role (shopper, merchant, market association, operations), the site map, the
+API surface, the camera and detection pipelines, media handling, caching, quality bars, the
+Korean integrations and their lead times, and the legal gates that block launch.
+
+Open it in a browser. This prototype is its reference implementation, and §29 maps each
+requirement to the file here that demonstrates it.
+
 ## Run it
 
 ```bash

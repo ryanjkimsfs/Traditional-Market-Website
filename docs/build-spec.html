@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Build specification for MarketMesh, an information and retail platform for Korean traditional markets.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E">
+<title>MarketMesh Build Spec</title>
+<style>
+  :root {
+    --ground: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef1f5;
+    --ink: #12161c;
+    --ink-2: #333c48;
+    --muted: #5a6472;
+    --line: #dee3ea;
+    --line-2: #c6cedb;
+
+    --accent: #1f5f9e;
+    --accent-ink: #16456f;
+    --accent-soft: #e7eff7;
+
+    --flag: #a97800;
+    --flag-bg: #fdf3d6;
+    --flag-line: #e8cf8e;
+
+    --ok: #1c7a4d;    --ok-bg: #e3f3ea;
+    --warn: #9a5f00;  --warn-bg: #fbeeda;
+    --risk: #a8231c;  --risk-bg: #fbe6e4;
+
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard",
+            "Noto Sans KR", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0f1216;  --surface: #161a20;  --surface-2: #1c222a;
+      --ink: #e9edf3;     --ink-2: #c2cad6;    --muted: #8d99a8;
+      --line: #262d37;    --line-2: #36404d;
+      --accent: #79b0e6;  --accent-ink: #a8cdf3; --accent-soft: #16232f;
+      --flag: #f0c04a;    --flag-bg: #2a2413;  --flag-line: #4a3f1c;
+      --ok: #52b783;      --ok-bg: #14261d;
+      --warn: #d8a248;    --warn-bg: #2a2113;
+      --risk: #e9827a;    --risk-bg: #2c1817;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0f1216;  --surface: #161a20;  --surface-2: #1c222a;
+    --ink: #e9edf3;     --ink-2: #c2cad6;    --muted: #8d99a8;
+    --line: #262d37;    --line-2: #36404d;
+    --accent: #79b0e6;  --accent-ink: #a8cdf3; --accent-soft: #16232f;
+    --flag: #f0c04a;    --flag-bg: #2a2413;  --flag-line: #4a3f1c;
+    --ok: #52b783;      --ok-bg: #14261d;
+    --warn: #d8a248;    --warn-bg: #2a2113;
+    --risk: #e9827a;    --risk-bg: #2c1817;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--sans); font-size: 16px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell { max-width: 1240px; margin: 0 auto; padding: 0 24px 96px; }
+  .masthead { border-bottom: 2px solid var(--ink); padding: 40px 0 20px; margin-bottom: 28px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 12px;
+  }
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.75rem); line-height: 1.08; margin: 0 0 12px;
+    letter-spacing: -.025em; font-weight: 800; text-wrap: balance;
+  }
+  .standfirst { font-size: 1.08rem; color: var(--ink-2); max-width: 68ch; margin: 0 0 22px; }
+  .metaline {
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--line); padding-top: 14px;
+  }
+  .metaline b { color: var(--ink-2); font-weight: 600; }
+
+  .layout { display: grid; grid-template-columns: 218px minmax(0, 1fr); gap: 48px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 0; } }
+
+  nav.toc { position: sticky; top: 20px; font-family: var(--mono); font-size: 12.5px; }
+  @media (max-width: 900px) {
+    nav.toc { position: static; margin-bottom: 40px; border: 1px solid var(--line);
+              border-radius: 6px; padding: 16px; background: var(--surface); }
+  }
+  nav.toc h2 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+               color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  nav.toc a {
+    display: grid; grid-template-columns: 20px 1fr; gap: 6px;
+    color: var(--ink-2); text-decoration: none; padding: 3px 4px; border-radius: 4px;
+  }
+  nav.toc a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  nav.toc a span { color: var(--muted); }
+
+  section { scroll-margin-top: 20px; margin-bottom: 52px; }
+  h2.sec {
+    display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: baseline;
+    font-size: 1.45rem; letter-spacing: -.02em; font-weight: 750; margin: 0 0 10px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line-2); text-wrap: balance;
+  }
+  h2.sec .num { font-family: var(--mono); font-size: .82rem; color: var(--accent); font-weight: 600; }
+  h3 { font-size: 1.05rem; margin: 28px 0 8px; letter-spacing: -.01em; font-weight: 700; }
+  h4 { font-size: .95rem; margin: 20px 0 6px; font-weight: 700; color: var(--ink-2); }
+  p { margin: 0 0 14px; max-width: 74ch; }
+  ul { max-width: 74ch; padding-left: 20px; margin: 0 0 16px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  code {
+    font-family: var(--mono); font-size: .86em; background: var(--surface-2);
+    padding: 1px 5px; border-radius: 3px; border: 1px solid var(--line);
+  }
+  strong { font-weight: 680; }
+  .lede { font-size: 1.02rem; color: var(--ink-2); max-width: 72ch; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono);
+    font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; font-weight: 600;
+    padding: 2px 7px; border-radius: 3px; border: 1px solid transparent; white-space: nowrap;
+    vertical-align: 1px;
+  }
+  .chip--must { background: var(--flag-bg); color: var(--flag); border-color: var(--flag-line); }
+  .chip--later { background: var(--surface-2); color: var(--muted); border-color: var(--line); }
+  .chip--built { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+  .chip--legal { background: var(--risk-bg); color: var(--risk); border-color: transparent; }
+  .chip--decide { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 13px 16px;
+            background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+            margin-bottom: 32px; font-size: 13px; }
+  .legend div { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+
+  .tw { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 600px; }
+  th, td { text-align: left; padding: 9px 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; background: var(--surface-2);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.mono { font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+  .note {
+    border-left: 3px solid var(--accent); background: var(--surface);
+    padding: 14px 18px; margin: 0 0 18px; border-radius: 0 6px 6px 0; max-width: 74ch;
+  }
+  .note--risk { border-left-color: var(--risk); }
+  .note--decide { border-left-color: var(--warn); }
+  .note p:last-child { margin-bottom: 0; }
+  .note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); display: block; margin-bottom: 5px;
+  }
+
+  /* feature rows */
+  .req { display: grid; margin: 0 0 18px; border: 1px solid var(--line);
+         border-radius: 6px; overflow: hidden; background: var(--surface); }
+  .req > div { display: grid; grid-template-columns: 76px 1fr; gap: 14px;
+               padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  .req > div:last-child { border-bottom: 0; }
+  .req .id { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .req .txt { font-size: 14px; }
+  .req .txt em { color: var(--muted); font-style: normal; font-size: 13px; display: block; margin-top: 3px; }
+
+  /* site map tree */
+  .tree {
+    font-family: var(--mono); font-size: 13px; line-height: 1.75;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; overflow-x: auto; margin: 0 0 18px;
+  }
+  .tree .row { display: grid; grid-template-columns: minmax(240px, 300px) 1fr; gap: 20px; white-space: nowrap; }
+  .tree .row > span:last-child { white-space: normal; color: var(--muted); font-family: var(--sans); font-size: 13px; }
+  .tree .path { color: var(--ink); }
+  .tree .path b { color: var(--accent-ink); font-weight: 600; }
+  .tree .group {
+    display: block; margin: 16px 0 6px; padding-top: 12px; border-top: 1px solid var(--line);
+    font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+  }
+  .tree .group:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 18px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; }
+  .card h4 { margin-top: 0; }
+  .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 56px; padding-top: 20px;
+           font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">Build specification · v2.0 · 2026-08-16</p>
+  <h1>MarketMesh</h1>
+  <p class="standfirst">
+    An information and retail platform for Korean traditional markets. Shoppers see the actual
+    counter before they buy: a live stall camera they can zoom, or a photo stamped with the minute
+    it was taken, the produce on it listed by an object detector, and the merchant one tap away
+    on the phone.
+  </p>
+  <div class="metaline">
+    <span><b>For</b> the engineering team building v1</span>
+    <span><b>Reference build</b> <code>real website/</code></span>
+    <span><b>Roles</b> shopper · merchant · association · operations</span>
+    <span><b>Language</b> ko primary, en secondary</span>
+  </div>
+</header>
+
+<div class="legend">
+  <div><span class="chip chip--must">v1</span> ships in the first release</div>
+  <div><span class="chip chip--later">v2</span> deferred without argument</div>
+  <div><span class="chip chip--built">Proven</span> already working in the prototype</div>
+  <div><span class="chip chip--legal">Legal</span> blocks launch</div>
+  <div><span class="chip chip--decide">Decide</span> needs a client decision</div>
+</div>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span>1</span> What we build</a></li>
+    <li><a href="#s2"><span>2</span> Site map</a></li>
+    <li><a href="#s3"><span>3</span> Shopper</a></li>
+    <li><a href="#s4"><span>4</span> Merchant</a></li>
+    <li><a href="#s5"><span>5</span> Association</a></li>
+    <li><a href="#s6"><span>6</span> Operations</a></li>
+    <li><a href="#s7"><span>7</span> Permissions</a></li>
+    <li><a href="#s8"><span>8</span> Cameras &amp; zoom</a></li>
+    <li><a href="#s9"><span>9</span> Object detection</a></li>
+    <li><a href="#s10"><span>10</span> Search</a></li>
+    <li><a href="#s11"><span>11</span> Map &amp; location</a></li>
+    <li><a href="#s12"><span>12</span> Market layout</a></li>
+    <li><a href="#s13"><span>13</span> Recommendations</a></li>
+    <li><a href="#s14"><span>14</span> Checkout</a></li>
+    <li><a href="#s15"><span>15</span> Notifications</a></li>
+    <li><a href="#s16"><span>16</span> Data model</a></li>
+    <li><a href="#s17"><span>17</span> API</a></li>
+    <li><a href="#s18"><span>18</span> Media handling</a></li>
+    <li><a href="#s19"><span>19</span> Caching</a></li>
+    <li><a href="#s20"><span>20</span> Technology</a></li>
+    <li><a href="#s21"><span>21</span> Quality bars</a></li>
+    <li><a href="#s22"><span>22</span> SEO &amp; i18n</a></li>
+    <li><a href="#s23"><span>23</span> Analytics</a></li>
+    <li><a href="#s24"><span>24</span> Legal gates</a></li>
+    <li><a href="#s25"><span>25</span> Security</a></li>
+    <li><a href="#s26"><span>26</span> Testing</a></li>
+    <li><a href="#s27"><span>27</span> Build order</a></li>
+    <li><a href="#s28"><span>28</span> Onboarding</a></li>
+    <li><a href="#s29"><span>29</span> Open decisions</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="s1">
+  <h2 class="sec"><span class="num">1</span> What we build</h2>
+
+  <p class="lede">
+    Traditional markets lose to supermarkets on one thing only: certainty. A shopper cannot see
+    the produce before leaving home, cannot tell whether the stall opened today, and cannot ask a
+    question without walking there. Everything else the market has, price, freshness, the person
+    behind the counter, is intact.
+  </p>
+
+  <p>
+    MarketMesh sells that certainty. It is two products in one codebase, and both must work:
+  </p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>The information half</h4>
+      <p>
+        A public, searchable record of every connected market: where it is, when it opens, which
+        stalls trade there, what they sell, and what the counter looked like minutes ago. This
+        works for a visitor who never buys anything, and it is what earns search traffic.
+      </p>
+    </div>
+    <div class="card">
+      <h4>The retail half</h4>
+      <p>
+        Cart, order, per-stall settlement, pickup or same-day delivery. A market order is several
+        small orders that travel together, and the system models it that way rather than
+        pretending a market is one shop.
+      </p>
+    </div>
+  </div>
+
+  <h3>Six rules that settle arguments later</h3>
+  <div class="req">
+    <div><span class="id">RULE-1</span><span class="txt"><b>Freshness is stated, never implied.</b>
+      <em>Every stall image carries its exact capture time directly underneath, colour-coded by age. A stall with no photo says so rather than showing a stock image.</em></span></div>
+    <div><span class="id">RULE-2</span><span class="txt"><b>Detected prices are advisory.</b>
+      <em>A price read off a paper tag is marked an estimate. A merchant-entered price is authoritative. The two are never mixed silently.</em></span></div>
+    <div><span class="id">RULE-3</span><span class="txt"><b>The system degrades in public.</b>
+      <em>Live camera → today's photo → older photo → nothing registered. Each state gets its own designed treatment.</em></span></div>
+    <div><span class="id">RULE-4</span><span class="txt"><b>The phone number is a feature.</b>
+      <em>Calling the merchant is a primary action on every stall surface. A purchase that ends in a phone call is a success, not a funnel leak.</em></span></div>
+    <div><span class="id">RULE-5</span><span class="txt"><b>Location data is real or absent.</b>
+      <em>Coordinates come from an authoritative source with provenance stored. Where a market's internal layout is not published, the interface says the arrangement is illustrative.</em></span></div>
+    <div><span class="id">RULE-6</span><span class="txt"><b>A market is many businesses.</b>
+      <em>Orders, settlement, hours, closures and stock are per stall. The market is a grouping, never the seller.</em></span></div>
+  </div>
+</section>
+
+<section id="s2">
+  <h2 class="sec"><span class="num">2</span> Site map</h2>
+
+  <p>
+    Every route in v1. Public routes are server-rendered and indexable; everything behind a login
+    is client-rendered. Korean is the default locale, English is served at <code>/en/…</code>.
+  </p>
+
+  <div class="tree">
+    <span class="group">Public · shopper</span>
+    <div class="row"><span class="path"><b>/</b></span><span>Home. Live stalls now, freshest photos, area finder, recommendations.</span></div>
+    <div class="row"><span class="path">├─ <b>/markets</b></span><span>All markets, filtered by 시·도 → 시·군·구.</span></div>
+    <div class="row"><span class="path">│&nbsp;&nbsp; └─ <b>/markets/[market]</b></span><span>One market: stall grid, preview panel with zoom, hours, address, phone.</span></div>
+    <div class="row"><span class="path">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├─ <b>#layout</b></span><span>Stall layout for that market, on the same page.</span></div>
+    <div class="row"><span class="path">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └─ <b>/stalls/[stall]</b></span><span>The stall: live feed with zoom, detected products, prices, call button.</span></div>
+    <div class="row"><span class="path">├─ <b>/map</b></span><span>Map of all markets, nearest first from the shopper's location.</span></div>
+    <div class="row"><span class="path">│&nbsp;&nbsp; └─ <b>/map?market=…&amp;view=layout</b></span><span>Deep link into one market's layout from the map.</span></div>
+    <div class="row"><span class="path">├─ <b>/search?q=</b></span><span>Products, stalls and markets in one result set.</span></div>
+    <div class="row"><span class="path">├─ <b>/cart</b></span><span>Basket grouped by stall, each group with its own phone number.</span></div>
+    <div class="row"><span class="path">├─ <b>/checkout</b></span><span>Pickup or delivery, Onnuri discount, payment.</span></div>
+    <div class="row"><span class="path">├─ <b>/orders/[id]</b></span><span>Order status per stall: accepted, being prepared, ready.</span></div>
+    <div class="row"><span class="path">└─ <b>/account</b></span><span>Saved stalls, order history, language, notification settings.</span></div>
+
+    <span class="group">Merchant console · 상인 로그인</span>
+    <div class="row"><span class="path"><b>/merchant</b></span><span>Today at a glance: photo age, open orders, sold-out items.</span></div>
+    <div class="row"><span class="path">├─ <b>/merchant/media</b></span><span>Upload today's photo or a short video. Three taps.</span></div>
+    <div class="row"><span class="path">├─ <b>/merchant/products</b></span><span>Prices, units, origin, stock, one-tap sold out.</span></div>
+    <div class="row"><span class="path">├─ <b>/merchant/detections</b></span><span>Confirm or correct what the detector found.</span></div>
+    <div class="row"><span class="path">├─ <b>/merchant/orders</b></span><span>Incoming orders: accept, decline, adjust weight.</span></div>
+    <div class="row"><span class="path">└─ <b>/merchant/settings</b></span><span>Hours, closing days, camera status, payout account.</span></div>
+
+    <span class="group">Association console · 상인회 로그인</span>
+    <div class="row"><span class="path"><b>/association</b></span><span>Market health: how many stalls have a photo under 24 hours old.</span></div>
+    <div class="row"><span class="path">├─ <b>/association/stalls</b></span><span>Every stall, its status, who to chase.</span></div>
+    <div class="row"><span class="path">├─ <b>/association/onboarding</b></span><span>Register a new stall, assign it to a zone.</span></div>
+    <div class="row"><span class="path">└─ <b>/association/notices</b></span><span>Market-wide notices and closure days.</span></div>
+
+    <span class="group">Operations · internal</span>
+    <div class="row"><span class="path"><b>/admin</b></span><span>Platform status.</span></div>
+    <div class="row"><span class="path">├─ <b>/admin/cameras</b></span><span>Every camera and gateway, online or not.</span></div>
+    <div class="row"><span class="path">├─ <b>/admin/detections</b></span><span>Detection quality, correction rate, retraining queue.</span></div>
+    <div class="row"><span class="path">├─ <b>/admin/markets</b></span><span>Markets, coordinates, outlines, layouts.</span></div>
+    <div class="row"><span class="path">└─ <b>/admin/orders</b></span><span>Orders, refunds, disputes.</span></div>
+  </div>
+
+  <div class="note">
+    <span class="tag">Routing note</span>
+    <p>
+      Stalls live at <code>/stalls/[stall]</code>, not nested under the market, so a stall keeps
+      one permanent URL if it moves market or the market is renamed. The market page links to it;
+      breadcrumbs carry the hierarchy.
+    </p>
+  </div>
+</section>
+
+<section id="s3">
+  <h2 class="sec"><span class="num">3</span> Shopper</h2>
+
+  <p class="lede">The whole public product. If this half is not good, nothing else matters.</p>
+
+  <h3>3.1 Finding a market</h3>
+  <div class="req">
+    <div><span class="id">SH-1</span><span class="txt">Area filter: 국가 → 시·도 → 시·군·구 → 시장, each step narrowing the next. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-2</span><span class="txt">Map with every market pinned, nearest first from the shopper's location. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-3</span><span class="txt">One search box covering products, stalls and markets. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-4</span><span class="txt">Market page: address, hours, closing days, transit, parking, phone, stall count. <span class="chip chip--must">v1</span></span></div>
+  </div>
+
+  <h3>3.2 Seeing the shop</h3>
+  <div class="req">
+    <div><span class="id">SH-5</span><span class="txt">Stall grid, each card showing live / photo / not-registered status and the trade. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-6</span><span class="txt"><b>Capture time under every photo</b>, colour-coded: green under an hour, amber under a day, red older, grey when nothing is registered. <span class="chip chip--must">v1</span>
+      <em>The one explicit instruction in the original brief. Never derived from upload time; set by the capturing device.</em></span></div>
+    <div><span class="id">SH-7</span><span class="txt">Live feed on the stall page with <b>zoom in, zoom out and reset</b>, plus drag to pan, wheel, pinch and double-tap. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-8</span><span class="txt">Preview panel on the market page with the same zoom controls, so a shopper can check several stalls without leaving. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-9</span><span class="txt">Merchant-uploaded video plays in the same viewer as a live feed, with the same controls. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SH-10</span><span class="txt">Camera offline is a stated state with the last photo and its time, never a spinner. <span class="chip chip--must">v1</span></span></div>
+  </div>
+
+  <h3>3.3 Knowing what is on the counter</h3>
+  <div class="req">
+    <div><span class="id">SH-11</span><span class="txt">Product list per stall from object detection, with name, unit, origin and stock. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-12</span><span class="txt">Detection boxes drawn over the image, toggleable, each labelled with its confidence. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-13</span><span class="txt">Hovering a box highlights its row in the list and the reverse. <span class="chip chip--later">v2</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-14</span><span class="txt">Price shown per item; an estimated price carries a visible marker and a confirm-with-the-stall note. <span class="chip chip--must">v1</span></span></div>
+  </div>
+
+  <h3>3.4 Acting on it</h3>
+  <div class="req">
+    <div><span class="id">SH-15</span><span class="txt"><b>Call the merchant</b> from the stall page, the market page, the map pin and the cart. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-16</span><span class="txt">Text message and directions alongside the call button. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SH-17</span><span class="txt">Add to cart from the stall page, the search results and the recommendations. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-18</span><span class="txt">Checkout with pickup or same-day delivery, Onnuri discount shown as a line. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SH-19</span><span class="txt">Order status per stall, with notification when a stall accepts. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SH-20</span><span class="txt">Recommendations: what to buy next, each with a one-sentence reason. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SH-21</span><span class="txt">Save a stall, see order history, switch language. <span class="chip chip--later">v2</span></span></div>
+  </div>
+</section>
+
+<section id="s4">
+  <h2 class="sec"><span class="num">4</span> Merchant</h2>
+
+  <p class="lede">
+    The half that decides whether the platform stays alive. If merchants stop refreshing photos,
+    the shopper product is worthless within a week.
+  </p>
+
+  <div class="note">
+    <span class="tag">Design constraint</span>
+    <p>
+      The median merchant is over 60, works with wet hands, and has one phone. The console is
+      judged on one number: <b>seconds from opening the app to a fresh photo being live.</b> Target
+      under 15, camera launch included. Anything that adds a step to that flow gets cut.
+    </p>
+  </div>
+
+  <div class="req">
+    <div><span class="id">ME-1</span><span class="txt"><b>Upload today's photo</b> in three taps, from the phone camera or the gallery. <span class="chip chip--must">v1</span>
+      <em>The server stamps the capture time from the image metadata or the moment of receipt. The merchant cannot edit it.</em></span></div>
+    <div><span class="id">ME-2</span><span class="txt"><b>Upload a short video</b> (up to 30 seconds) as an alternative to a photo, for stalls with no camera. <span class="chip chip--must">v1</span>
+      <em>Transcoded server-side to MP4 and a poster frame; plays in the shopper's viewer with the same zoom controls.</em></span></div>
+    <div><span class="id">ME-3</span><span class="txt">Review detections: accept, correct or remove each item the detector found. <span class="chip chip--must">v1</span>
+      <em>Corrections are stored as labelled training data. This is how the model improves.</em></span></div>
+    <div><span class="id">ME-4</span><span class="txt">Set price, unit and origin per product; one-tap sold out. <span class="chip chip--must">v1</span>
+      <em>Origin is a required field, not optional. See §16.</em></span></div>
+    <div><span class="id">ME-5</span><span class="txt">Order queue with an audible alert; accept, decline with a reason, or adjust the weight before capture. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">ME-6</span><span class="txt">Open and close for the day with one control, which drives the public status. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">ME-7</span><span class="txt">Camera status in plain words with a call-support button. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">ME-8</span><span class="txt">A daily reminder to refresh the photo, by KakaoTalk, at an hour the merchant chooses. <span class="chip chip--must">v1</span>
+      <em>Cheapest possible intervention against the platform's main failure mode.</em></span></div>
+    <div><span class="id">ME-9</span><span class="txt">Payout account, settlement history, monthly statement. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">ME-10</span><span class="txt">Turn the camera off, temporarily or permanently, without calling anyone. <span class="chip chip--must">v1</span> <span class="chip chip--legal">Legal</span></span></div>
+  </div>
+</section>
+
+<section id="s5">
+  <h2 class="sec"><span class="num">5</span> Market association</h2>
+
+  <p class="lede">
+    상인회 is the reason a market joins at all. One person there decides whether forty merchants
+    sign up, so give them a reason to log in every week.
+  </p>
+
+  <div class="req">
+    <div><span class="id">AS-1</span><span class="txt">Market health board: how many stalls have a photo under 24 hours old, how many cameras are live, how many are dormant. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">AS-2</span><span class="txt">Stall list with each stall's last update and a one-tap nudge by KakaoTalk. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">AS-3</span><span class="txt">Onboard a stall: name, trade, phone, stall number, zone, business registration. <span class="chip chip--must">v1</span>
+      <em>The association does this, not engineering. Onboarding a market must never require a deploy.</em></span></div>
+    <div><span class="id">AS-4</span><span class="txt">Edit market-level facts: hours, closing days, notices, holiday schedule. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">AS-5</span><span class="txt">Maintain the market's zones and stall layout. <span class="chip chip--later">v2</span></span></div>
+    <div><span class="id">AS-6</span><span class="txt">Monthly summary suitable for a 지자체 or 소진공 funding report. <span class="chip chip--later">v2</span></span></div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2 class="sec"><span class="num">6</span> Operations</h2>
+
+  <p class="lede">Internal. Small, but the platform cannot run without it.</p>
+
+  <div class="req">
+    <div><span class="id">OP-1</span><span class="txt">Camera and gateway board: online, offline, last frame received, per market. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">OP-2</span><span class="txt">Alerts: gateway misses two heartbeats, camera offline 15 minutes, or a stall publishes zero detections during trading hours. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">OP-3</span><span class="txt">Detection quality: correction rate by class, so a failing class is visible before shoppers complain. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">OP-4</span><span class="txt">Market records: coordinates, provenance, outline, layout, published-plan source. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">OP-5</span><span class="txt">Orders, refunds and disputes, with an audit trail. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">OP-6</span><span class="txt">Camera approval gate: a camera cannot go public until framing is approved and face blurring is confirmed. <span class="chip chip--must">v1</span> <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">OP-7</span><span class="txt">Moderation of merchant-uploaded photos and video. <span class="chip chip--must">v1</span></span></div>
+  </div>
+</section>
+
+<section id="s7">
+  <h2 class="sec"><span class="num">7</span> Permissions</h2>
+  <p>Who may do what. Enforce server-side on every endpoint; the interface only hides things.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Action</th><th>Shopper</th><th>Merchant</th><th>Association</th><th>Ops</th></tr></thead>
+      <tbody>
+        <tr><td>Browse markets, stalls, layouts</td><td class="mono">yes</td><td class="mono">yes</td><td class="mono">yes</td><td class="mono">yes</td></tr>
+        <tr><td>Watch a live stall</td><td class="mono">yes</td><td class="mono">yes</td><td class="mono">yes</td><td class="mono">yes</td></tr>
+        <tr><td>Place an order</td><td class="mono">yes</td><td class="mono">yes</td><td class="mono">yes</td><td class="mono">no</td></tr>
+        <tr><td>Upload media for a stall</td><td class="mono">no</td><td class="mono">own stall</td><td class="mono">no</td><td class="mono">any, logged</td></tr>
+        <tr><td>Edit prices, stock, hours</td><td class="mono">no</td><td class="mono">own stall</td><td class="mono">no</td><td class="mono">any, logged</td></tr>
+        <tr><td>Review detections</td><td class="mono">no</td><td class="mono">own stall</td><td class="mono">no</td><td class="mono">any</td></tr>
+        <tr><td>Accept or decline an order</td><td class="mono">no</td><td class="mono">own stall</td><td class="mono">no</td><td class="mono">no</td></tr>
+        <tr><td>Refund an order</td><td class="mono">request</td><td class="mono">own stall</td><td class="mono">no</td><td class="mono">any</td></tr>
+        <tr><td>Onboard a stall, edit market facts</td><td class="mono">no</td><td class="mono">no</td><td class="mono">own market</td><td class="mono">any</td></tr>
+        <tr><td>Turn a camera off</td><td class="mono">no</td><td class="mono">own stall</td><td class="mono">no</td><td class="mono">any</td></tr>
+        <tr><td>Approve a camera for public view</td><td class="mono">no</td><td class="mono">no</td><td class="mono">no</td><td class="mono">yes</td></tr>
+        <tr><td>Read another stall's sales figures</td><td class="mono">no</td><td class="mono">no</td><td class="mono">aggregate only</td><td class="mono">yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <span class="tag">Rule</span>
+    <p>A merchant account is scoped to one stall. Someone running two stalls holds two grants on one login, never a wildcard. Association accounts are scoped to one market and never see an individual stall's revenue.</p>
+  </div>
+</section>
+
+<section id="s8">
+  <h2 class="sec"><span class="num">8</span> Cameras &amp; zoom</h2>
+
+  <h3>7.1 Three ways a stall shows itself</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Source</th><th>How it works</th><th>Who has it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Live camera</b></td>
+          <td>The gateway pulls the camera's <b>RTSP</b> stream over the market's local network, transcodes it, and pushes out: gateway → LL-HLS → CDN → shopper. The stream starts when a shopper opens the stall and stops 30 s after the last viewer leaves.</td>
+          <td class="mono">stalls with hardware</td>
+        </tr>
+        <tr>
+          <td><b>Merchant photo</b></td>
+          <td>Uploaded from the phone. Server stamps the capture time. This is the default for most stalls and must feel first-class, not a fallback.</td>
+          <td class="mono">every stall</td>
+        </tr>
+        <tr>
+          <td><b>Merchant video</b></td>
+          <td>Up to 30 s, transcoded server-side, poster frame extracted, played in the same viewer with the same zoom controls.</td>
+          <td class="mono">every stall</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 The viewer <span class="chip chip--built">Proven</span></h3>
+  <p>One component handles all three sources, so zoom works identically everywhere.</p>
+  <div class="req">
+    <div><span class="id">CAM-0</span><span class="txt"><b>Cameras are never reachable from the internet.</b> The gateway pulls RTSP inside the market LAN and is the only device that egresses. No port forwarding, no camera on a public address, default credentials changed at install. <span class="chip chip--must">v1</span> <span class="chip chip--legal">Legal</span>
+      <em>An exposed camera is both a security hole and a privacy breach, and Korean market routers are not hardened. Verify at install and re-check on the ops board.</em></span></div>
+    <div><span class="id">CAM-1</span><span class="txt"><b>Zoom in, zoom out, reset</b> as on-screen buttons, large enough for a thumb. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CAM-2</span><span class="txt">Drag to pan when zoomed, mouse wheel to zoom, pinch on touch, double-tap to zoom to a point. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CAM-3</span><span class="txt">Zoom level indicator and a fullscreen control. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CAM-4</span><span class="txt">PTZ presets for cameras that support them: wide, left, centre, right. <span class="chip chip--later">v2</span></span></div>
+    <div><span class="id">CAM-5</span><span class="txt">Detection boxes scale and pan with the image, staying locked to the produce. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CAM-6</span><span class="txt">Live badge, camera id and a running clock over the feed. <span class="chip chip--must">v1</span></span></div>
+  </div>
+
+  <h3>7.3 Hardware, in one table</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Item</th><th>Spec</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Camera</td><td class="mono">1080p30, H.264/265, PoE, <b>RTSP + ONVIF Profile S</b>, <b>no microphone</b></td><td>Audio capture is a legal problem, not a feature. §16</td></tr>
+        <tr><td>Lens</td><td class="mono">2.8–12 mm varifocal</td><td>Counters run 1.5 m to 6 m wide; fixed lenses cause reshoots</td></tr>
+        <tr><td>Gateway</td><td class="mono">One per market. Mini PC to 8 cameras, Jetson Orin Nano beyond</td><td>Runs transcode and object detection on the same box</td></tr>
+        <tr><td>Delivery</td><td class="mono">LL-HLS, 2 s parts, target ≤ 6 s glass to glass</td><td>WebRTC sub-second is a v2 decision</td></tr>
+        <tr><td>Always-on</td><td class="mono">One keyframe to storage every 20 s</td><td>This is what the stall shows when nobody is watching</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <span class="tag">Cost control</span>
+    <p>
+      Viewer-gated streaming is the difference between a payable bill and an unpayable one. Never
+      stream a camera nobody is watching; the 20-second keyframe covers that case at almost no cost.
+    </p>
+  </div>
+</section>
+
+<section id="s9">
+  <h2 class="sec"><span class="num">9</span> Object detection</h2>
+
+  <p class="lede">
+    The detector turns a counter into a product list. It runs on a snapshot every 20 seconds, not
+    on every frame, and its output is a proposal the merchant can overrule.
+  </p>
+
+  <div class="req">
+    <div><span class="id">DET-1</span><span class="txt">Inference runs on the market gateway, not in the cloud. <span class="chip chip--must">v1</span>
+      <em>Sending every snapshot from every camera to a cloud GPU costs more than the platform earns and breaks when the uplink drops. This is the same edge-versus-cloud split already being studied in this repository.</em></span></div>
+    <div><span class="id">DET-2</span><span class="txt">Runs every 20 s while the stall is open, and immediately when a merchant uploads a photo. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">DET-3</span><span class="txt">Publish at confidence ≥ 0.80; hold 0.60–0.80 for merchant review; discard below. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">DET-4</span><span class="txt">Every published item stores its model version, confidence and the exact frame it came from. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">DET-5</span><span class="txt">Merchant corrections are written back as training data. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">DET-6</span><span class="txt">A stall with no detections still shows its photo and its product list. Detection enhances, never gates. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">DET-7</span><span class="txt">Price OCR on the tag crop, always advisory, never used to compute a cart total. <span class="chip chip--later">v2</span>
+      <em>Handwritten marker on fluorescent card is the hard case and the common one. Optional, exactly as the brief says.</em></span></div>
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Stage</th><th>Choice</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Model</td><td class="mono">YOLO11-s or RT-DETR-R18</td><td>Detection only; segmentation adds cost without changing the product</td></tr>
+        <tr><td>Classes</td><td class="mono">60–120 SKU groups</td><td>Named as a shopper names them: 사과, 배, 감귤, 시금치. Not cultivar level</td></tr>
+        <tr><td>Dataset v1</td><td class="mono">3,000–5,000 labelled frames</td><td>From the pilot market's own cameras, morning, midday and dusk</td></tr>
+        <tr><td>Edge runtime</td><td class="mono">TensorRT or ONNX Runtime, INT8</td><td>On the gateway beside the camera</td></tr>
+        <tr><td>Target</td><td class="mono">85% accepted without correction</td><td>Measured on merchant review, not on a held-out set</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s10">
+  <h2 class="sec"><span class="num">10</span> Search</h2>
+
+  <div class="req">
+    <div><span class="id">SR-1</span><span class="txt">One box, three result types: products, stalls, markets, grouped and labelled. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SR-2</span><span class="txt">Live dropdown while typing, with a thumbnail and price for products. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SR-3</span><span class="txt"><b>Korean initial-consonant search.</b> <code>ㅅㄱ</code> finds 사과, 시금치, 신고 배. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span>
+      <em>No stock index does this. Store a chosung-decomposed column beside the display name and query it when the input is jamo-only.</em></span></div>
+    <div><span class="id">SR-4</span><span class="txt">Matches on product name, origin, trade, stall name and market name. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SR-5</span><span class="txt">Results filter the map and the list together; a query with no match says so instead of emptying the page. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SR-6</span><span class="txt">Recent and suggested searches. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">SR-7</span><span class="txt">Sort results by distance when location is available. <span class="chip chip--later">v2</span></span></div>
+  </div>
+
+  <p>
+    PostgreSQL full-text with <code>pg_trgm</code> for fuzziness plus the chosung column covers v1
+    at this catalogue size. Move to Meilisearch only when the catalogue passes roughly 100,000
+    products.
+  </p>
+</section>
+
+<section id="s11">
+  <h2 class="sec"><span class="num">11</span> Map &amp; location</h2>
+
+  <div class="req">
+    <div><span class="id">MP-1</span><span class="txt">Real tile map with every market pinned at a verified coordinate. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">MP-2</span><span class="txt"><b>Use the shopper's location</b> to sort markets nearest first, with distance shown on every row and rings on the map. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span>
+      <em>Ask for permission at the moment it pays off, not on page load. Refusal falls back to a stated default order, never a dead end.</em></span></div>
+    <div><span class="id">MP-3</span><span class="txt">Pin opens a preview with the stall's live view, zoom controls and a call button. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">MP-4</span><span class="txt">Search filters pins and list together. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">MP-5</span><span class="txt">Market outline drawn when zoomed in past street level. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">MP-6</span><span class="txt">Directions handed off to Naver Map, KakaoMap or Google Maps, always carrying the exact coordinate. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span>
+      <em>A name-only link can land on a same-named market in another city.</em></span></div>
+  </div>
+
+  <h3>10.1 Getting the data from Naver, legitimately</h3>
+  <p>
+    Naver is where Korean shoppers expect map data to come from, and its place records carry the
+    phone numbers and categories that make a listing complete. Use the official APIs; scraping the
+    map site or bulk-storing its place database breaches the terms and puts the project at risk.
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Source</th><th>Gives you</th><th>Use it for</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>NAVER Cloud Platform<br>Maps API</b></td>
+          <td>Web Dynamic Map, Geocoding, Reverse Geocoding, Static Map, Directions</td>
+          <td>Displaying the map and drawing routes, if you choose Naver as the map vendor</td>
+          <td class="mono">NCP account, client id, per-domain registration, paid beyond a free tier</td>
+        </tr>
+        <tr>
+          <td><b>NAVER Open API<br>지역 검색</b></td>
+          <td>Place name, category, phone, address, road address, coordinates</td>
+          <td><b>Seeding markets and stalls</b>: search 시장 by name and area to pull a starting record for the association to confirm</td>
+          <td class="mono">25,000 calls/day; coordinates come in TM128 and need converting to WGS84</td>
+        </tr>
+        <tr>
+          <td><b>도로명주소 API</b><br><span class="mono">행정안전부</span></td>
+          <td>Authoritative Korean addresses</td>
+          <td>Merchant onboarding, delivery addresses, address validation</td>
+          <td class="mono">Free with a key. This is the address source of record</td>
+        </tr>
+        <tr>
+          <td><b>VWorld</b><br><span class="mono">국토교통부</span></td>
+          <td>Geocoder and map tiles</td>
+          <td><b>The stored coordinate</b> for every market, with provenance</td>
+          <td class="mono">Free with a registered domain, government-authoritative</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <span class="tag">The rule that keeps this clean</span>
+    <p>
+      <b>Naver seeds and displays; 도로명주소 and VWorld are what you store.</b> Pull a candidate
+      record from Naver to save the association typing, have a human confirm it, then resolve the
+      address through 도로명주소 and the coordinate through VWorld, and store that with its source
+      recorded. Every market in the prototype already carries such a provenance field, and it is
+      what let us catch coordinates that were out by more than a kilometre.
+    </p>
+  </div>
+
+  <div class="note note--decide">
+    <span class="tag">Decide</span>
+    <p>
+      Map vendor: <b>Naver</b> (most familiar to Korean shoppers, needs NCP keys and per-domain
+      registration, paid at volume), <b>Kakao</b> (similar, strong on 길찾기), or <b>VWorld/OSM
+      through MapLibre</b> (free, no vendor lock, slightly plainer Korean cartography). The
+      prototype runs the third. Deep links out to Naver and Kakao work regardless.
+    </p>
+  </div>
+</section>
+
+<section id="s12">
+  <h2 class="sec"><span class="num">12</span> Market layout</h2>
+
+  <p class="lede">
+    Knowing which stall sits where is what turns a listing into a market. Two sources, and the
+    interface must be honest about which one it is showing.
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Case</th><th>What to do</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>The market publishes a plan</b></td>
+          <td>Digitise it. Trace the published 배치도 into stall polygons with their real numbers, and carry the market's own zone names and gate numbers.</td>
+          <td class="mono">마포농수산물시장 publishes 1층·2층 배치도 with 9 numbered gates and stall numbers</td>
+        </tr>
+        <tr>
+          <td><b>No published plan</b></td>
+          <td>Draw the plan on the market's real surveyed outline, oriented to its long axis, with a true metre scale, and place stalls by zone. Say in the caption that stall positions are illustrative.</td>
+          <td class="mono">가좌시장, 모래내시장, and most alley markets</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="req">
+    <div><span class="id">LY-1</span><span class="txt">A plan for every market, reachable from the map, the market page and search results, and directly linkable. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">LY-2</span><span class="txt">Zones carry the market's own published names where they exist; otherwise stalls group by trade and the caption says so. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">LY-3</span><span class="txt">Tapping a stall on the plan opens its counter; the stall page shows a "you are here" plan. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">LY-4</span><span class="txt">Stalls not yet onboarded are drawn as unregistered units, so a 5,000-stall market does not read as a two-shop market. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">LY-5</span><span class="txt">Entrances, gates and facilities marked where documented. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">LY-6</span><span class="txt">The association can move a stall on the plan without engineering. <span class="chip chip--later">v2</span></span></div>
+  </div>
+</section>
+
+<section id="s13">
+  <h2 class="sec"><span class="num">13</span> Recommendations <span class="chip chip--built">Proven</span></h2>
+
+  <div class="req">
+    <div><span class="id">RC-1</span><span class="txt">Suggestions drawn from cart contents, viewed stalls, searches, the season and the time of day. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">RC-2</span><span class="txt">Each suggestion carries a one-sentence reason grounded in something real: a cooking pairing, the season, a just-refreshed counter, the market being browsed. <span class="chip chip--must">v1</span>
+      <em>사과 in the basket suggests 배, because that is how a 차례상 is bought.</em></span></div>
+    <div><span class="id">RC-3</span><span class="txt">The model may only return identifiers from the catalogue sent to it; anything else is dropped server-side. Names, prices and stalls always come from the database. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">RC-4</span><span class="txt">A deterministic engine covers every case the model cannot: no key, no network, timeout, too few valid picks. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">RC-5</span><span class="txt">The profile sent out is anonymous: no identifier, no contact detail, no address. <span class="chip chip--must">v1</span> <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">RC-6</span><span class="txt">Appears on the home page, the stall page, search results and the cart, tuned to each context. <span class="chip chip--must">v1</span></span></div>
+  </div>
+
+  <p>
+    Provider is xAI Grok behind a server-side proxy, already working in the prototype. The proxy
+    holds the key, builds the prompt and validates the response. No model call originates in the
+    browser.
+  </p>
+</section>
+
+<section id="s14">
+  <h2 class="sec"><span class="num">14</span> Checkout</h2>
+
+  <div class="req">
+    <div><span class="id">CO-1</span><span class="txt">Cart grouped by stall, each group carrying that stall's phone number and delivery terms. <span class="chip chip--must">v1</span> <span class="chip chip--built">Proven</span></span></div>
+    <div><span class="id">CO-2</span><span class="txt">One order becomes one sub-order per stall, each independently accepted, declined and refunded. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CO-3</span><span class="txt"><b>Authorise, then capture.</b> Fish and meat settle at the real weight, so never charge the estimate up front. <span class="chip chip--must">v1</span>
+      <em>The most common failure in Korean fresh-food commerce.</em></span></div>
+    <div><span class="id">CO-4</span><span class="txt">Pickup or same-day delivery, with the fee waived above a threshold. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CO-5</span><span class="txt">Onnuri voucher discount as a visible line item. <span class="chip chip--must">v1</span> <span class="chip chip--decide">Decide</span>
+      <em>Longest integration to obtain. Start the SEMAS application in week one and design checkout to ship with this line disabled.</em></span></div>
+    <div><span class="id">CO-6</span><span class="txt">Card payment through a Korean PG that supports authorise-then-capture. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CO-7</span><span class="txt">Merchant accepts or declines within a timeout; the shopper is told either way by KakaoTalk with SMS fallback. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CO-8</span><span class="txt">Per-stall settlement with commission and a payout schedule. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">CO-9</span><span class="txt">Guest checkout with a phone number, no account required. <span class="chip chip--must">v1</span></span></div>
+  </div>
+</section>
+
+<section id="s15">
+  <h2 class="sec"><span class="num">15</span> Notifications</h2>
+  <p>KakaoTalk 알림톡 is the primary channel in Korea, with SMS as the fallback when a template fails. Email is for receipts and statements only.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Event</th><th>Who</th><th>Channel</th><th>Timing</th></tr></thead>
+      <tbody>
+        <tr><td>New order placed</td><td>Merchant</td><td class="mono">push + 알림톡 + audible</td><td>Immediate, repeat at 2 min if unread</td></tr>
+        <tr><td>Order accepted or declined</td><td>Shopper</td><td class="mono">알림톡 → SMS</td><td>Immediate</td></tr>
+        <tr><td>Weight adjusted, amount changed</td><td>Shopper</td><td class="mono">알림톡</td><td>Before capture, with the new total</td></tr>
+        <tr><td>Ready for pickup or dispatched</td><td>Shopper</td><td class="mono">알림톡</td><td>Immediate</td></tr>
+        <tr><td>Not accepted in time</td><td>Both</td><td class="mono">알림톡</td><td>At timeout, authorisation released</td></tr>
+        <tr><td>Daily photo reminder</td><td>Merchant</td><td class="mono">알림톡</td><td>At an hour the merchant picks</td></tr>
+        <tr><td>Camera offline 15 min</td><td>Merchant + Ops</td><td class="mono">push / alert</td><td>Once, not repeating</td></tr>
+        <tr><td>Weekly market health</td><td>Association</td><td class="mono">알림톡 + email</td><td>Monday morning</td></tr>
+        <tr><td>Gateway down</td><td>Ops</td><td class="mono">pager</td><td>Two missed heartbeats</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>알림톡 templates need approval before launch, so write them in phase 2 rather than phase 4. Every message carries an unsubscribe path except transactional order messages.</p>
+</section>
+
+<section id="s16">
+  <h2 class="sec"><span class="num">16</span> Data model</h2>
+
+  <p>The tables that carry the product's meaning. Everything else is ordinary.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Table</th><th>Holds</th><th>The part that matters</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">market</td><td>Name, addresses, hours, phone, transit, stall count</td><td><code>location</code> and <code>outline</code> as PostGIS geography, plus <code>coord_source</code> recording how the point was established</td></tr>
+        <tr><td class="mono">market_zone</td><td>Named sections of a market</td><td><code>is_published_name</code> — true only when the market itself uses that name</td></tr>
+        <tr><td class="mono">stall</td><td>Name, stall number, trade, phone, hours, payment methods</td><td><code>status</code> drives the public badge; <code>business_reg_no</code> is verified before payouts</td></tr>
+        <tr><td class="mono">camera</td><td>Hardware, PTZ, resolution, state</td><td><code>framing_approved_at</code> and <code>face_blur</code> — a camera without both cannot go public</td></tr>
+        <tr><td class="mono">stall_media</td><td>Every photo, video and keyframe</td><td><b><code>captured_at</code></b> — set by the capturing device, never editable. The whole freshness contract is this one column</td></tr>
+        <tr><td class="mono">product</td><td>Name, unit, origin, price, stock</td><td><code>price_source</code> is <code>merchant</code> or <code>ocr</code>; <code>origin_label</code> is required by law</td></tr>
+        <tr><td class="mono">detection</td><td>Class, confidence, bounding box</td><td><code>media_id</code> ties a box to the exact frame it was found on; <code>review_state</code> carries the merchant's verdict</td></tr>
+        <tr><td class="mono">order_group</td><td>What the shopper thinks they bought</td><td>Totals, fulfilment method, payment intent</td></tr>
+        <tr><td class="mono">order_stall</td><td>What each merchant actually sells</td><td><code>amount_authorised</code> and <code>amount_captured</code> differ for weight-variable goods</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s17">
+  <h2 class="sec"><span class="num">17</span> API</h2>
+  <p>REST over HTTPS, JSON, cursor pagination, <code>Idempotency-Key</code> on every write. Public reads are unauthenticated and cacheable; everything else carries a session or a service credential.</p>
+
+  <h4>Public</h4>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">GET</td><td class="mono">/v1/markets?region=&amp;near=lat,lng</td><td>Markets, distance-sorted when <code>near</code> is given</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/markets/:slug</td><td>Market, zones, outline, hours, phone</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/markets/:slug/stalls</td><td>Stalls with current media and freshness</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/markets/:slug/layout</td><td>Zones, stall placements, entrances, facilities</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/stalls/:slug</td><td>Stall, products, current detections</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/stalls/:slug/freshness</td><td>Small cheap payload, polled every 20 to 30 s</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/stalls/:slug/stream</td><td>Signed short-lived playback URL; starts the stream</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/search?q=&amp;type=</td><td>Products, stalls, markets; handles jamo-only input</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/recommendations</td><td>Anonymous profile in, validated picks out</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Shopper session</h4>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">POST</td><td class="mono">/v1/carts/:id/items</td><td>Adds an item; rejects an estimate-priced item without confirmation</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/orders</td><td>Creates the group, splits per stall, authorises payment</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/v1/orders/:id</td><td>Group with each stall's state</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/orders/:id/cancel</td><td>Cancels while every stall is still pending</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Merchant, association, gateway</h4>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Method</th><th>Path</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">POST</td><td class="mono">/v1/merchant/media</td><td>Photo or video upload; server stamps <code>captured_at</code></td></tr>
+        <tr><td class="mono">PATCH</td><td class="mono">/v1/merchant/products/:id</td><td>Price, unit, origin, stock</td></tr>
+        <tr><td class="mono">PATCH</td><td class="mono">/v1/merchant/detections/:id</td><td>Accept, correct or reject</td></tr>
+        <tr><td class="mono">PATCH</td><td class="mono">/v1/merchant/orders/:id</td><td>Accept, decline, adjust weight, mark ready</td></tr>
+        <tr><td class="mono">PATCH</td><td class="mono">/v1/merchant/stall</td><td>Hours, closure, camera on or off</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/association/stalls</td><td>Onboard a stall</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/ingest/keyframe</td><td>Gateway posts a frame with its capture time <span class="mono">(mTLS)</span></td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/ingest/detections</td><td>Gateway posts a batch of results <span class="mono">(mTLS)</span></td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/ingest/heartbeat</td><td>Gateway and camera health <span class="mono">(mTLS)</span></td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/v1/webhooks/pg</td><td>Payment callbacks, signature verified, replay protected</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Conventions</h4>
+  <ul>
+    <li>Errors return <code>{ code, message_ko, message_en, field }</code>. The code is stable and machine-readable; the messages are display-ready in both languages.</li>
+    <li>Money is an integer of KRW. No floats anywhere in the money path.</li>
+    <li>Timestamps are RFC 3339 with an offset. The server stores UTC, the client renders KST.</li>
+    <li>Every write accepts <code>Idempotency-Key</code> and returns the original result on replay.</li>
+    <li>Rate limits: search 60/min per IP, stream start 20/min per session, media upload 30/hour per stall, recommendations 30/min per session.</li>
+  </ul>
+</section>
+
+<section id="s18">
+  <h2 class="sec"><span class="num">18</span> Media handling</h2>
+  <p class="lede">Merchant uploads are the platform's lifeblood and its most awkward input: an iPhone photo taken with wet hands over LTE.</p>
+  <div class="req">
+    <div><span class="id">MD-1</span><span class="txt"><b>Accept HEIC.</b> It is the iPhone default and will be most uploads. Transcode server-side. <span class="chip chip--must">v1</span>
+      <em>Rejecting HEIC silently excludes a large share of merchants.</em></span></div>
+    <div><span class="id">MD-2</span><span class="txt"><b>Read the capture time from EXIF, then strip all EXIF.</b> <span class="chip chip--must">v1</span> <span class="chip chip--legal">Legal</span>
+      <em>The timestamp is the freshness contract. The GPS tag in the same block is the merchant's home address if they shot it off-site, and must never reach the CDN.</em></span></div>
+    <div><span class="id">MD-3</span><span class="txt">Honour EXIF orientation before stripping, or half the photos publish sideways. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">MD-4</span><span class="txt">Downscale on the device before upload; cap the request at 12 MB. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">MD-5</span><span class="txt">Publish AVIF and WebP with a JPEG fallback at widths 320 / 640 / 960 / 1440, content-hashed and cached immutably for a year. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">MD-6</span><span class="txt">Video: 30 s maximum, H.264 MP4 at 720p, poster frame extracted, audio stripped. <span class="chip chip--must">v1</span>
+      <em>Audio strips for the same reason cameras have no microphone. See §24.</em></span></div>
+    <div><span class="id">MD-7</span><span class="txt">Run the detector on every accepted upload and show the merchant the result while they are still in the app. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">MD-8</span><span class="txt">Keep the previous media until the new one finishes processing, so a stall never goes blank mid-upload. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">MD-9</span><span class="txt">Face blurring on merchant uploads too, not only on camera frames. <span class="chip chip--must">v1</span> <span class="chip chip--legal">Legal</span></span></div>
+  </div>
+</section>
+
+<section id="s19">
+  <h2 class="sec"><span class="num">19</span> Caching &amp; freshness</h2>
+  <p>The hard part of this product is that a page is mostly static except for the one thing that must never be stale. Split the page accordingly.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>What</th><th>Cache</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Market and stall page shell</td><td class="mono">ISR, revalidate 60 s</td><td>Names, hours and addresses barely change</td></tr>
+        <tr><td>Freshness, live state, detections</td><td class="mono">client polls 20–30 s, no HTTP cache</td><td>This is the claim the product makes; it cannot be stale</td></tr>
+        <tr><td>Stall photo files</td><td class="mono">immutable, 1 year, content-hashed</td><td>A new photo is a new URL, so the old one caches forever</td></tr>
+        <tr><td>Playback URL</td><td class="mono">never cached, signed, expires in minutes</td><td>A cached stream URL is a permanent public feed</td></tr>
+        <tr><td>Search results</td><td class="mono">30 s edge cache on the query string</td><td>Absorbs repeat queries without hiding new stock for long</td></tr>
+        <tr><td>Map tiles</td><td class="mono">per the vendor's terms</td><td>Naver and Kakao restrict tile caching. Read the licence</td></tr>
+        <tr><td>Cart and orders</td><td class="mono">never</td><td>Stated so nobody adds a CDN rule that breaks it</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <span class="tag">The trap</span>
+    <p>Do not bake the freshness stamp into server-rendered HTML and then cache that HTML. Render the shell, fetch freshness client-side, and the timestamp stays honest at every layer. Vary the cache key on locale, never on the user.</p>
+  </div>
+</section>
+
+<section id="s20">
+  <h2 class="sec"><span class="num">20</span> Technology</h2>
+
+  <p>Pin these majors. Upgrade deliberately, not incidentally.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Web app</td><td class="mono">Next.js 15 · React 19 · TypeScript 5.6</td><td>Market and stall pages must be server-rendered and indexable</td></tr>
+        <tr><td>Styling</td><td class="mono">Tailwind 4 + CSS custom properties</td><td>Tokens survive a redesign</td></tr>
+        <tr><td>Data fetching</td><td class="mono">TanStack Query 5 · Zustand 5 for the cart</td><td>Polling freshness and stream state with sane caching</td></tr>
+        <tr><td>Map</td><td class="mono">MapLibre GL 4, or Naver Maps SDK if Naver is chosen</td><td>See the vendor decision in §10</td></tr>
+        <tr><td>Video</td><td class="mono">hls.js 1.5, native HLS on Safari</td><td>LL-HLS everywhere without a plugin</td></tr>
+        <tr><td>API</td><td class="mono">FastAPI · Python 3.12 · Pydantic v2</td><td>One language shared with the detection work</td></tr>
+        <tr><td>Database</td><td class="mono">PostgreSQL 16 + PostGIS 3.4</td><td>Nearest-market and outline queries belong in the database. Not optional</td></tr>
+        <tr><td>Cache and jobs</td><td class="mono">Redis 7 + Celery 5</td><td>Sessions, rate limits, settlement runs, notifications</td></tr>
+        <tr><td>Storage</td><td class="mono">S3-compatible (NCP Object Storage or Cloudflare R2)</td><td>Photos, merchant video, keyframes</td></tr>
+        <tr><td>Search</td><td class="mono">PostgreSQL FTS + pg_trgm + chosung column</td><td>Meilisearch only past ~100k products</td></tr>
+        <tr><td>Auth</td><td class="mono">Kakao and Naver login; PASS + 사업자등록번호 for merchants</td><td>A merchant account controls real money</td></tr>
+        <tr><td>Gateway</td><td class="mono">Ubuntu 24.04 · Docker · FFmpeg 7 · Tailscale</td><td>Remote access without opening ports on a market's router</td></tr>
+        <tr><td>Streaming origin</td><td class="mono">SRS 6 self-hosted, or Amazon IVS</td><td>Self-hosted is cheaper; managed removes operations</td></tr>
+        <tr><td>ML</td><td class="mono">PyTorch 2.4 · Ultralytics YOLO11 · TensorRT / ONNX Runtime</td><td>Train in the cloud, run on the gateway</td></tr>
+        <tr><td>Recommendations</td><td class="mono">xAI Grok via server proxy</td><td>Already integrated and validated</td></tr>
+        <tr><td>Hosting</td><td class="mono">NCP or AWS ap-northeast-2 (Seoul)</td><td>Latency and Korean data-residency expectations</td></tr>
+        <tr><td>Monitoring</td><td class="mono">Sentry · Prometheus · Grafana</td><td>Camera uptime is a product metric, not just an ops metric</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Integrations with long lead times</h4>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Integration</th><th>Lead time</th><th>Start</th></tr></thead>
+      <tbody>
+        <tr><td>디지털 온누리상품권 (조폐공사 / SEMAS agreement)</td><td class="mono">4–12 weeks</td><td>Week 1, before any code</td></tr>
+        <tr><td>PG contract (토스페이먼츠 or 나이스페이먼츠)</td><td class="mono">2–4 weeks</td><td>Week 1</td></tr>
+        <tr><td>PASS 본인확인</td><td class="mono">2–4 weeks</td><td>Week 2</td></tr>
+        <tr><td>KakaoTalk 알림톡 templates</td><td class="mono">1–2 weeks</td><td>Week 4, templates need approval</td></tr>
+        <tr><td>NCP Maps / Naver Open API keys</td><td class="mono">days</td><td>Week 1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s21">
+  <h2 class="sec"><span class="num">21</span> Quality bars</h2>
+
+  <h3>21.1 Performance</h3>
+  <p>Measured on a mid-tier Android over LTE, not on the developer's laptop.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Metric</th><th>Budget</th></tr></thead>
+      <tbody>
+        <tr><td>Largest Contentful Paint, market page</td><td class="mono">≤ 2.5 s</td></tr>
+        <tr><td>Interaction to Next Paint</td><td class="mono">≤ 200 ms</td></tr>
+        <tr><td>Cumulative Layout Shift</td><td class="mono">≤ 0.10</td></tr>
+        <tr><td>JavaScript shipped, market page</td><td class="mono">≤ 180 KB gzipped</td></tr>
+        <tr><td>First video frame after opening a stall</td><td class="mono">≤ 3 s</td></tr>
+        <tr><td>Glass to glass, camera to shopper</td><td class="mono">≤ 6 s</td></tr>
+        <tr><td>Search response, p95</td><td class="mono">≤ 150 ms</td></tr>
+        <tr><td>Merchant photo live after upload</td><td class="mono">≤ 10 s</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>21.2 Accessibility <span class="chip chip--must">v1</span></h3>
+  <ul>
+    <li>WCAG 2.2 AA: 4.5:1 body text, 3:1 large text and interface borders, verified by measurement rather than by eye.</li>
+    <li>Full keyboard operation including the zoom controls and the stall layout, with a visible focus ring everywhere.</li>
+    <li>The decorative video is hidden from assistive technology; everything it conveys is available as text.</li>
+    <li>Touch targets at least 44 px on coarse pointers.</li>
+    <li><code>prefers-reduced-motion</code> honoured completely, and live in both directions.</li>
+    <li>Korean and English both pass. Do not test only the English build.</li>
+  </ul>
+
+  <h3>21.3 Devices</h3>
+  <ul>
+    <li>Safari iOS 16+, Chrome Android 110+, desktop Chrome, Edge and Firefox current.</li>
+    <li><b>Samsung Internet</b>, a large share of Korean Android traffic and routinely forgotten.</li>
+    <li>Usable at 360 px. The merchant console is designed phone-first, not adapted to it.</li>
+  </ul>
+
+  <h3>21.4 Empty, loading and failure states</h3>
+  <p>Every one of these is designed, not left to chance. A professional site is judged on them.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>State</th><th>What the visitor sees</th></tr></thead>
+      <tbody>
+        <tr><td>Camera offline</td><td>The last photo, its capture time, and a plain sentence saying the camera is offline</td></tr>
+        <tr><td>Stall with no media at all</td><td>An honest "not registered yet" card with the phone number promoted</td></tr>
+        <tr><td>Stall closed today</td><td>Closed badge, next opening day, ordering disabled</td></tr>
+        <tr><td>Detection found nothing</td><td>The photo and the merchant's own product list, with no empty detection panel</td></tr>
+        <tr><td>Search with no match</td><td>Suggestions, not a blank page; the map keeps its pins and says so</td></tr>
+        <tr><td>Geolocation denied</td><td>Default order with a line explaining why, and a way to try again</td></tr>
+        <tr><td>Payment failed</td><td>The cart intact, the reason in plain Korean, and a retry</td></tr>
+        <tr><td>Offline device</td><td>Cached last-known data, clearly marked as last known</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s22">
+  <h2 class="sec"><span class="num">22</span> SEO &amp; localisation</h2>
+  <p>The information half only pays off if a shopper searching "가좌시장 사과" finds the stall. Treat search visibility as a feature with an owner.</p>
+  <div class="req">
+    <div><span class="id">SEO-1</span><span class="txt">Market, stall and layout pages are server-rendered with real content in the HTML, not hydrated in. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SEO-2</span><span class="txt">Structured data: <code>ShoppingCenter</code> for a market, <code>GroceryStore</code> for a stall with <code>openingHoursSpecification</code> and <code>telephone</code>, <code>Product</code> with <code>Offer</code> for items. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SEO-3</span><span class="txt"><code>sitemap.xml</code> generated from the database, split per market, with <code>lastmod</code> from the stall's last update. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SEO-4</span><span class="txt">Canonical URLs, and <code>hreflang</code> pairs between <code>/…</code> and <code>/en/…</code>. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SEO-5</span><span class="txt">Per-stall Open Graph image using the current counter photo, so a shared link shows the real stall. <span class="chip chip--must">v1</span></span></div>
+    <div><span class="id">SEO-6</span><span class="txt">Naver Search Advisor and Google Search Console both verified at launch. <span class="chip chip--must">v1</span>
+      <em>Naver is the majority search engine for this audience and needs its own submission.</em></span></div>
+  </div>
+
+  <h4>Localisation rules</h4>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Thing</th><th>Korean</th><th>English</th></tr></thead>
+      <tbody>
+        <tr><td>Currency</td><td class="mono">12,000원</td><td class="mono">₩12,000</td></tr>
+        <tr><td>Address order</td><td class="mono">시 → 구 → 로 → 번지</td><td class="mono">reversed, romanised</td></tr>
+        <tr><td>Phone</td><td class="mono">032-584-5006</td><td class="mono">+82 32 584 5006 on tel: links</td></tr>
+        <tr><td>Date and time</td><td class="mono">2026-08-16 07:20 KST</td><td class="mono">same, KST stated</td></tr>
+        <tr><td>Relative time</td><td class="mono">42분 전</td><td class="mono">42 min ago</td></tr>
+        <tr><td>Units</td><td class="mono">kg, 개, 단, 망, 통</td><td class="mono">translate the counter word, never drop it</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Korean counter words carry real meaning: 사과 5개 and 사과 1박스 are different products. Store the unit as a label on the product, never parse it out of the name.</p>
+</section>
+
+<section id="s23">
+  <h2 class="sec"><span class="num">23</span> Analytics</h2>
+  <p>Instrument these from day one; they are the evidence for every later decision.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Event</th><th>Answers</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">stall_view</td><td>Which stalls earn attention</td></tr>
+        <tr><td class="mono">stream_start · stream_duration</td><td>Whether the camera investment pays, and what it costs</td></tr>
+        <tr><td class="mono">zoom_used</td><td>Whether the must-have feature is actually used</td></tr>
+        <tr><td class="mono">freshness_seen (age bucket)</td><td>Whether shoppers act on fresh stalls more than stale ones</td></tr>
+        <tr><td class="mono">call_clicked</td><td>The conversion the funnel would otherwise miss</td></tr>
+        <tr><td class="mono">add_to_cart · order_placed</td><td>The retail funnel</td></tr>
+        <tr><td class="mono">recommendation_shown · _clicked</td><td>Whether the recommender earns its cost</td></tr>
+        <tr><td class="mono">merchant_photo_uploaded</td><td>The single health metric of the whole platform</td></tr>
+        <tr><td class="mono">detection_corrected</td><td>Model quality in the field</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Self-hosted analytics without third-party advertising cookies keeps the PIPA consent banner simple. Never send an order identifier or a phone number to an analytics vendor.</p>
+</section>
+
+<section id="s24">
+  <h2 class="sec"><span class="num">24</span> Legal gates</h2>
+
+  <p class="lede">
+    Broadcasting video from a public marketplace is the highest-risk thing this platform does.
+    These block launch.
+  </p>
+
+  <div class="req">
+    <div><span class="id">LAW-1</span><span class="txt"><b>Counter-only framing.</b> Cameras point at the merchant's own counter, not down the aisle, and the merchant approves the framing at install. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-2</span><span class="txt"><b>Face blurring</b> on the gateway before any frame leaves the market. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-3</span><span class="txt"><b>No audio.</b> Buy cameras with no microphone. Recording conversation engages 통신비밀보호법. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-4</span><span class="txt"><b>CCTV notices</b> (영상정보처리기기 안내판) at the market entrance and each filmed stall: purpose, scope, retention, contact. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-5</span><span class="txt"><b>Retention limits.</b> Live segments ephemeral, keyframes 30 days at most, nothing archived without a stated purpose. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-6</span><span class="txt"><b>Merchant consent</b> per stall, in writing, with a self-service off switch in the console. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-7</span><span class="txt"><b>원산지 표시.</b> Origin must be displayed for agricultural and fishery products; the platform inherits the duty when it lists them. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-8</span><span class="txt"><b>전자상거래법.</b> 통신판매업 신고, business identity, terms, and an accurate 청약철회 policy including the fresh-food exemptions. <span class="chip chip--legal">Legal</span></span></div>
+    <div><span class="id">LAW-9</span><span class="txt"><b>개인정보 보호법.</b> Consent, minimum collection, deletion on request, domestic controller of record. <span class="chip chip--legal">Legal</span></span></div>
+  </div>
+
+  <div class="note note--risk">
+    <span class="tag">The one that ends the project</span>
+    <p>
+      A camera aimed down an aisle streams shoppers' faces to the public internet without their
+      consent. That is not a bug report, it is the end. Framing approval and face blurring are
+      therefore install-time gates enforced in the admin tool: a camera that has not passed both
+      cannot be switched public.
+    </p>
+  </div>
+</section>
+
+<section id="s25">
+  <h2 class="sec"><span class="num">25</span> Security &amp; infrastructure</h2>
+
+  <h3>25.1 Environments</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Environment</th><th>Data</th><th>Cameras</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">local</td><td>Seeded fixtures</td><td>Recorded loops, no hardware needed</td></tr>
+        <tr><td class="mono">staging</td><td>Anonymised copy</td><td>One test camera</td></tr>
+        <tr><td class="mono">production</td><td>Real, Seoul region</td><td>The fleet</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>25.2 Security</h3>
+  <ul>
+    <li>Gateways authenticate with mTLS client certificates, rotated on a schedule; revoking one stops ingest immediately.</li>
+    <li>Playback URLs are signed and expire in minutes, so a leaked URL never becomes a permanent public feed.</li>
+    <li>Secrets in a managed store. Never in the repository, never baked into a container image.</li>
+    <li>Payment webhooks verify their signature and are replay-protected.</li>
+    <li>Merchant actions on price, stock, media and orders are audit-logged with actor, before and after.</li>
+    <li>Uploads are content-type sniffed, size capped, and processed outside the web tier.</li>
+    <li>Dependency and container scanning in CI; a failing scan blocks the deploy.</li>
+    <li>Default camera credentials changed at install and recorded as a completed step. See CAM-0.</li>
+  </ul>
+
+  <h3>25.3 Operations</h3>
+  <ul>
+    <li>Alert on: gateway missing two heartbeats, camera offline 15 minutes, zero detections from a trading stall, payment webhook failures, error rate above baseline.</li>
+    <li>A runbook per alert, written for a non-engineer first responder, because the pilot on-call may not be an engineer.</li>
+    <li>Nightly backups with a restore rehearsed before launch, not after the first incident.</li>
+    <li>Deploys reversible in one command; migrations backward compatible for one release.</li>
+  </ul>
+</section>
+
+<section id="s26">
+  <h2 class="sec"><span class="num">26</span> Testing &amp; definition of done</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Layer</th><th>Tool</th><th>Covers</th></tr></thead>
+      <tbody>
+        <tr><td>Unit</td><td class="mono">Vitest · pytest</td><td>Freshness thresholds, money maths, chosung decomposition, distance sort</td></tr>
+        <tr><td>API</td><td class="mono">pytest + schemathesis</td><td>Contract, permissions on every endpoint, idempotency</td></tr>
+        <tr><td>End to end</td><td class="mono">Playwright</td><td>The five journeys below, in Korean and English</td></tr>
+        <tr><td>Visual</td><td class="mono">Playwright snapshots</td><td>Stall card in all four freshness states, both themes</td></tr>
+        <tr><td>Load</td><td class="mono">k6</td><td>Stream start storm, search burst</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>The five journeys that must always pass</h4>
+  <ul>
+    <li>Find a market by area, open a stall, zoom the live view, call the merchant.</li>
+    <li>Search a product by 초성, reach the stall, add it, check out as a guest.</li>
+    <li>Allow location, see the nearest market first, open its layout, tap a stall.</li>
+    <li>Merchant uploads a photo; it is live with a correct timestamp within ten seconds.</li>
+    <li>Merchant accepts an order, adjusts the weight, and the captured amount matches.</li>
+  </ul>
+
+  <h4>A feature is done when</h4>
+  <ul>
+    <li>It works in Korean and English, at 360 px and on desktop, in light and dark.</li>
+    <li>Its empty, loading and failure states are designed and reachable in staging.</li>
+    <li>It is keyboard operable and passes the contrast check.</li>
+    <li>Its permissions are enforced server-side and covered by an API test.</li>
+    <li>Its analytics events fire.</li>
+    <li>The console is clean and the performance budget still holds.</li>
+  </ul>
+</section>
+
+<section id="s27">
+  <h2 class="sec"><span class="num">27</span> Build order</h2>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Phase</th><th>Build</th><th>Done when</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>0 · Paperwork</b><br><span class="mono">week 1</span></td>
+          <td>Onnuri and PG applications, pilot market agreement, merchant consent form, legal review of §16, map vendor decision</td>
+          <td>Applications in and the pilot market has signed</td>
+        </tr>
+        <tr>
+          <td><b>1 · One camera</b><br><span class="mono">weeks 2–4</span></td>
+          <td>One stall end to end: camera, gateway, LL-HLS, keyframes, face blur, the zoom viewer</td>
+          <td>A shopper on LTE watches that counter and zooms it, and the monthly cost per camera is a known number</td>
+        </tr>
+        <tr>
+          <td><b>2 · Public site</b><br><span class="mono">weeks 4–8</span></td>
+          <td>Markets, stalls, search, map with location, layouts, photo timestamps, merchant photo and video upload</td>
+          <td>The pilot market is fully browsable and indexed, with no cart anywhere</td>
+        </tr>
+        <tr>
+          <td><b>3 · Detection</b><br><span class="mono">weeks 6–12</span></td>
+          <td>Dataset, model, edge deployment, merchant review loop</td>
+          <td>85% of published items pass merchant review unchanged</td>
+        </tr>
+        <tr>
+          <td><b>4 · Retail</b><br><span class="mono">weeks 10–16</span></td>
+          <td>Cart, per-stall orders, authorise and capture, merchant order queue, settlement, notifications</td>
+          <td>A real order is placed, accepted, weighed, captured and settled</td>
+        </tr>
+        <tr>
+          <td><b>5 · Scale</b><br><span class="mono">weeks 16+</span></td>
+          <td>More markets, association console, English, recommendations everywhere</td>
+          <td>Operations onboards a new market without engineering work</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <span class="tag">Why this order</span>
+    <p>
+      Phase 1 exists to find out what a camera really costs before anyone buys a fleet. If it comes
+      back expensive, the product still works on merchant photos and video alone, and that is a
+      decision worth being able to take cheaply.
+    </p>
+  </div>
+</section>
+
+<section id="s28">
+  <h2 class="sec"><span class="num">28</span> Onboarding a market</h2>
+  <p class="lede">Adding the ninth market must not require a developer. This runbook is a product requirement, not documentation written afterwards.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Step</th><th>Who</th><th>Tool</th></tr></thead>
+      <tbody>
+        <tr><td>Agreement with the 상인회, merchant consent forms signed</td><td>Business</td><td class="mono">paper</td></tr>
+        <tr><td>Create the market: seed from Naver 지역검색, confirm by hand</td><td>Ops</td><td class="mono">/admin/markets</td></tr>
+        <tr><td>Resolve the address through 도로명주소 and the coordinate through VWorld; record the source</td><td>Ops</td><td class="mono">/admin/markets</td></tr>
+        <tr><td>Add the outline and zones; digitise the published 배치도 if one exists</td><td>Ops</td><td class="mono">/admin/markets</td></tr>
+        <tr><td>Onboard stalls: name, trade, phone, stall number, zone, business number</td><td>Association</td><td class="mono">/association/onboarding</td></tr>
+        <tr><td>Invite merchants by KakaoTalk; they set prices and take the first photo</td><td>Association</td><td class="mono">merchant console</td></tr>
+        <tr><td>Install cameras where funded; approve framing, confirm face blur, change default credentials</td><td>Ops</td><td class="mono">/admin/cameras</td></tr>
+        <tr><td>Publish the market</td><td>Ops</td><td class="mono">/admin/markets</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <span class="tag">Gate</span>
+    <p>A market cannot be published until every listed stall has a phone number, an origin label on each product, and either a photo or a stated "not registered" state. A half-populated market damages trust in every other one.</p>
+  </div>
+</section>
+
+<section id="s29">
+  <h2 class="sec"><span class="num">29</span> Open decisions</h2>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>Decision</th><th>Consequence</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">D-1</td><td>Who owns and pays for the cameras: platform, merchant, or association?</td><td>Sets the business model and the install agreement</td></tr>
+        <tr><td class="mono">D-2</td><td>Does v1 take payment, or hand off to a phone call?</td><td>Dropping checkout removes PG, settlement and about six weeks</td></tr>
+        <tr><td class="mono">D-3</td><td>Map vendor: Naver, Kakao, or MapLibre with VWorld</td><td>Keys, quotas, per-domain registration, cost at volume</td></tr>
+        <tr><td class="mono">D-4</td><td>Commission rate, and who absorbs the delivery fee</td><td>Merchant willingness to join</td></tr>
+        <tr><td class="mono">D-5</td><td>Native app, or web only?</td><td>Merchant push notifications are materially better in an app</td></tr>
+        <tr><td class="mono">D-6</td><td>Is this a KSEF entry, a funded pilot, or a company?</td><td>Decides how much of §16 is required now rather than later</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>What the prototype already proves</h3>
+  <p>
+    The build in <code>real website/</code> is a reference for behaviour, not architecture: static
+    files and a small Python server, no database, no accounts. Read it to see what done looks like
+    on screen.
+  </p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Feature</th><th>File</th></tr></thead>
+      <tbody>
+        <tr><td>Zoom, pan, PTZ presets, detection overlay</td><td class="mono">assets/js/viewer.js</td></tr>
+        <tr><td>Freshness stamp and its colour thresholds</td><td class="mono">assets/js/core.js → freshness()</td></tr>
+        <tr><td>Search including 초성 matching</td><td class="mono">assets/js/core.js → MM.search</td></tr>
+        <tr><td>Map, nearest first, outlines, Naver and Kakao deep links</td><td class="mono">assets/js/map.js</td></tr>
+        <tr><td>Stall layout on a real market outline</td><td class="mono">assets/js/floor.js</td></tr>
+        <tr><td>Recommendations with identifier whitelisting and offline fallback</td><td class="mono">assets/js/recommend.js · server.py</td></tr>
+        <tr><td>Verified coordinates, outlines, layouts, catalogue shape</td><td class="mono">assets/js/data.js</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  MarketMesh build specification · v2.0 · 2026-08-16 · reference implementation in <code>real website/</code>
+</footer>
+
+</div>
+
+</body>
+</html>
