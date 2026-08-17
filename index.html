@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketMesh · 전통시장 실시간 장보기</title>
+<meta name="description" content="전국 전통시장 점포의 실시간 카메라와 매대 사진을 확인하고, AI가 인식한 오늘의 상품을 그대로 장바구니에 담으세요.">
+<meta name="theme-color" content="#1f6b45">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/cinema.css">
+</head>
+<body>
+<a class="skiplink" href="#main" data-i18n="skip"></a>
+<div id="mm-header"></div>
+
+<main id="main" tabindex="-1">
+
+<!-- ============================================================== hero == -->
+<section class="chero" id="chero" data-alive>
+  <div class="chero__sticky">
+    <div class="chero__stage" data-stage>
+      <img class="chero__poster" src="assets/img/stalls/produce-hall.jpg" alt="" aria-hidden="true">
+      <video class="chero__media" data-video data-src="assets/video/cam-ganghwa.mp4"
+             muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+      <div class="chero__scrim" aria-hidden="true"></div>
+    </div>
+
+    <div class="chero__hud" aria-hidden="true">
+      <span class="chip-hud"><i class="dot"></i>LIVE</span>
+      <span class="chip-hud">CAM-GJ-A12 · 4K</span>
+      <span class="chip-hud" id="heroClock"></span>
+    </div>
+
+    <div class="chero__rail" data-rail aria-hidden="true"><b></b><b></b><b></b></div>
+
+    <div class="chero__inner">
+      <div class="chero__bands">
+        <div class="cband">
+          <span class="kicker" data-i18n="hero.1.kicker"></span>
+          <h1 data-i18n="hero.1.title"></h1>
+          <p data-i18n="hero.1.body"></p>
+        </div>
+        <div class="cband">
+          <span class="kicker" data-i18n="hero.2.kicker"></span>
+          <h2 data-i18n="hero.2.title"></h2>
+          <p data-i18n="hero.2.body"></p>
+        </div>
+        <div class="cband">
+          <span class="kicker" data-i18n="hero.3.kicker"></span>
+          <h2 data-i18n="hero.3.title"></h2>
+          <p data-i18n="hero.3.body"></p>
+        </div>
+      </div>
+
+      <div class="chero__cta">
+        <a class="btn btn--primary" href="#live" data-i18n="home.hero.cta1"></a>
+        <a class="btn" href="#finder" data-i18n="home.hero.cta2"></a>
+        <a class="btn btn--ghost" href="map.html" data-i18n="map.title"></a>
+      </div>
+    </div>
+
+    <div class="chero__load" data-load aria-hidden="true"><i></i><span>0%</span></div>
+    <div class="chero__scrollcue" aria-hidden="true"><i></i><span data-i18n="hero.scroll"></span></div>
+  </div>
+</section>
+
+<!-- ============================================== live now (spotlight) == -->
+<section class="section" id="live" data-alive>
+  <div class="wrap">
+    <div class="shead rise">
+      <div>
+        <span class="kicker" data-i18n="nav.live"></span>
+        <h2 data-i18n="home.live"></h2>
+        <p class="muted" data-i18n="home.liveSub"></p>
+      </div>
+    </div>
+    <div class="livesplit">
+      <div id="heroViewer"></div>
+      <div>
+        <div class="chiprow" id="liveSwitcher"></div>
+        <div class="hero__stats" id="heroStats" style="margin-top:18px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================== region finder == -->
+<section class="section section--alt" id="finder">
+  <div class="wrap">
+    <div class="shead rise">
+      <div>
+        <span class="kicker" data-i18n="nav.markets"></span>
+        <h2 data-i18n="home.find"></h2>
+        <p class="muted" data-i18n="home.findSub"></p>
+      </div>
+      <span class="spacer"></span>
+      <a class="btn btn--sm btn--ghost" href="map.html">🗺 <span data-i18n="map.title"></span></a>
+    </div>
+
+    <div class="filters filters--5">
+      <div class="field"><label for="fCountry" data-i18n="filter.country"></label><select id="fCountry"></select></div>
+      <div class="field"><label for="fState" data-i18n="filter.state"></label><select id="fState"></select></div>
+      <div class="field"><label for="fCity" data-i18n="filter.city"></label><select id="fCity"></select></div>
+      <div class="field"><label for="fMarket" data-i18n="filter.market"></label><select id="fMarket"></select></div>
+      <div class="field"><label>&nbsp;</label><button class="btn btn--primary" id="fGo" data-i18n="home.go"></button></div>
+    </div>
+
+    <div id="finderPreview" style="margin-top:20px"></div>
+  </div>
+</section>
+
+<!-- ==================================================== freshest photos == -->
+<section class="section" data-alive>
+  <div class="wrap">
+    <div class="shead rise">
+      <div>
+        <span class="kicker" data-i18n="live.photo"></span>
+        <h2 data-i18n="home.fresh"></h2>
+        <p class="muted" data-i18n="home.freshSub"></p>
+      </div>
+    </div>
+    <div class="hscroll reveal" id="freshGrid"></div>
+  </div>
+</section>
+
+<!-- =========================================================== ai picks == -->
+<section class="section section--alt" id="picks">
+  <div class="wrap">
+    <div class="picks" id="picksHost"></div>
+  </div>
+</section>
+
+<!-- ============================================================ markets == -->
+<section class="section">
+  <div class="wrap">
+    <div class="shead rise">
+      <div>
+        <span class="kicker" data-i18n="common.market"></span>
+        <h2 data-i18n="home.markets"></h2>
+      </div>
+      <span class="spacer"></span>
+      <a class="btn btn--sm btn--ghost" href="map.html" data-i18n="common.more"></a>
+    </div>
+    <div class="grid-stores reveal" id="marketGrid"></div>
+  </div>
+</section>
+
+<!-- ================================================================ how == -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="shead rise"><div><span class="kicker">HOW IT WORKS</span><h2 data-i18n="home.how"></h2></div></div>
+    <div class="steps reveal" id="howSteps"></div>
+  </div>
+</section>
+
+</main>
+
+<div id="mm-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/viewer.js"></script>
+<script src="assets/js/recommend.js"></script>
+<script src="assets/js/cinema.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>

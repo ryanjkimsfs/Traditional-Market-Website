@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketMesh · 시장 점포 보기</title>
+<meta name="description" content="시장에 등록된 점포를 업종·실시간 여부·사진 최신순으로 살펴보고, 매대를 미리 확대해 볼 수 있습니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#1f6b45">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/cinema.css">
+</head>
+<body>
+<a class="skiplink" href="#main" data-i18n="skip"></a>
+<div id="mm-header"></div>
+<main id="main" tabindex="-1">
+
+<div class="wrap">
+  <nav class="crumbs" id="crumbs"></nav>
+</div>
+
+<!-- ====================================================== market header == -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="panel" id="marketHead"></div>
+  </div>
+</section>
+
+<!-- ============================================================ filters == -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="filters">
+      <div class="field"><label for="fCountry" data-i18n="filter.country"></label><select id="fCountry"></select></div>
+      <div class="field"><label for="fState" data-i18n="filter.state"></label><select id="fState"></select></div>
+      <div class="field"><label for="fCity" data-i18n="filter.city"></label><select id="fCity"></select></div>
+      <div class="field"><label for="fMarket" data-i18n="filter.market"></label><select id="fMarket"></select></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================ preview + store grid == -->
+<section class="section section--tight">
+  <div class="wrap storelayout storelayout--preview">
+    <!-- left: the preview panel from the spec, with its own zoom controls -->
+    <aside class="panel sticky" id="previewPanel">
+      <div class="panel__head"><h3 data-i18n="market.preview"></h3></div>
+      <div id="previewHost"></div>
+      <div id="previewMeta"></div>
+    </aside>
+
+    <div>
+      <div class="shead">
+        <div><h2 data-i18n="market.stores"></h2>
+          <p class="muted small" id="storeCount"></p></div>
+        <span class="spacer"></span>
+        <div class="field" style="min-width:170px">
+          <label for="fSort" data-i18n="filter.sort"></label>
+          <select id="fSort"></select>
+        </div>
+      </div>
+
+      <div class="chiprow" id="catChips" style="margin-bottom:16px"></div>
+      <div class="grid-stores" id="storeGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================== stall layout == -->
+<section class="section section--alt" id="layout">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <span class="kicker" data-i18n="map.floor"></span>
+        <h2 id="layoutTitle"></h2>
+        <p class="muted" id="layoutSub"></p>
+      </div>
+      <span class="spacer"></span>
+      <a class="btn btn--sm btn--ghost" id="layoutMapLink" href="map.html">🗺 <span data-i18n="map.region"></span></a>
+    </div>
+    <div id="floorHost"></div>
+  </div>
+</section>
+
+<!-- =========================================================== ai picks == -->
+<section class="section">
+  <div class="wrap">
+    <div class="picks" id="picksHost"></div>
+  </div>
+</section>
+
+</main>
+
+<div id="mm-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/cinema.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/viewer.js"></script>
+<script src="assets/js/floor.js"></script>
+<script src="assets/js/recommend.js"></script>
+<script src="assets/js/market.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketMesh · 시장 지도</title>
+<meta name="description" content="실제 지도 위에서 가까운 전통시장을 찾고, 시장 배치도에서 점포별 실시간 매대를 바로 확인하세요.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+<meta name="theme-color" content="#1f6b45">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/cinema.css">
+</head>
+<body>
+<a class="skiplink" href="#main" data-i18n="skip"></a>
+<div id="mm-header"></div>
+<main id="main" tabindex="-1">
+
+<div class="wrap">
+  <nav class="crumbs" id="crumbs"></nav>
+</div>
+
+<section class="section--tight">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.2rem);margin:0" data-i18n="map.title"></h1>
+        <p class="muted" id="mapSub"></p>
+      </div>
+      <span class="spacer"></span>
+      <div class="segmented" id="mapTabs">
+        <button data-tab="region" class="is-on" data-i18n="map.region"></button>
+        <button data-tab="floor" data-i18n="map.floor"></button>
+      </div>
+    </div>
+
+    <div class="maplayout">
+      <!-- ------------------------------------------------------- map frame -->
+      <div>
+        <div class="mapframe" id="regionFrame">
+          <!-- real tile map; the canvas below is the offline fallback -->
+          <div id="leafletMap"></div>
+          <canvas id="mapCanvas" hidden></canvas>
+
+          <div class="maptools">
+            <input id="mapSearch" class="btn" style="min-width:190px;text-align:left"
+                   type="search" data-i18n-ph="nav.search.placeholder" autocomplete="off">
+            <button class="btn" id="locateBtn">📍 <span data-i18n="map.locate"></span></button>
+            <div class="segmented" id="baseSwitch"></div>
+          </div>
+
+          <div class="maplegend" id="mapLegend"></div>
+          <div class="mapzoom">
+            <button class="zbtn" data-mzoom="in">+</button>
+            <button class="zbtn" data-mzoom="out">−</button>
+            <button class="zbtn" data-mzoom="reset">↺</button>
+          </div>
+          <div class="mapnote" id="mapNote" hidden></div>
+        </div>
+
+        <div class="floorwrap" id="floorFrame" hidden>
+          <div class="row" style="margin-bottom:10px">
+            <select id="floorMarket" class="btn" style="min-width:220px"></select>
+            <span class="muted small" id="floorHint"></span>
+          </div>
+          <div id="floorHost"></div>
+        </div>
+      </div>
+
+      <!-- ----------------------------------------------------- side column -->
+      <aside>
+        <div class="panel" id="sideCard" style="margin-bottom:14px"></div>
+        <div class="panel">
+          <div class="panel__head"><h3 id="listTitle"></h3></div>
+          <div class="mlist" id="marketList"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="mm-footer"></div>
+
+<script src="assets/vendor/leaflet/leaflet.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/cinema.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/viewer.js"></script>
+<script src="assets/js/floor.js"></script>
+<script src="assets/js/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketMesh · 점포 실시간 매대</title>
+<meta name="description" content="점포의 실시간 카메라를 확대·이동해 보고, AI가 인식한 오늘의 상품을 그대로 담아보세요.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#1f6b45">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/cinema.css">
+</head>
+<body>
+<a class="skiplink" href="#main" data-i18n="skip"></a>
+<div id="mm-header"></div>
+<main id="main" tabindex="-1">
+
+<div class="wrap">
+  <nav class="crumbs" id="crumbs"></nav>
+</div>
+
+<section class="section--tight">
+  <div class="wrap storelayout">
+    <!-- ------------------------------------------------ live / photo view -->
+    <div>
+      <div id="viewerHost"></div>
+
+      <div class="panel" style="margin-top:18px">
+        <div class="panel__head">
+          <h3 data-i18n="detect.title"></h3>
+          <span class="spacer"></span>
+          <span class="muted small" id="detectMeta"></span>
+        </div>
+        <div id="detectNote" class="muted small"></div>
+        <div id="productList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h3 id="wherePanelTitle"></h3>
+          <span class="spacer"></span>
+          <a class="btn btn--sm btn--ghost" id="whereMapLink" href="map.html">🗺</a>
+        </div>
+        <div id="floorHost"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head"><h3 data-i18n="common.reviews"></h3></div>
+        <div class="reviews" id="reviews"></div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------- side panel -->
+    <aside>
+      <div class="panel sticky" id="sidePanel"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- =========================================================== ai picks == -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="picks" id="picksHost"></div>
+  </div>
+</section>
+
+<!-- ======================================================= nearby stalls == -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="shead"><div><h2 id="nearbyTitle"></h2></div></div>
+    <div class="grid-stores" id="nearbyGrid"></div>
+  </div>
+</section>
+
+</main>
+
+<div id="mm-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/cinema.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/viewer.js"></script>
+<script src="assets/js/floor.js"></script>
+<script src="assets/js/recommend.js"></script>
+<script src="assets/js/store.js"></script>
+</body>
+</html>

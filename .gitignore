@@ -1,0 +1,5 @@
+# Never commit the xAI key — .env.example is the template to copy.
+.env
+
+.DS_Store
+__pycache__/

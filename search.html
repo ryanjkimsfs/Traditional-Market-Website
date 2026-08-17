@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketMesh · 검색</title>
+<meta name="description" content="상품·점포·시장을 한 번에 검색합니다. 초성 검색도 지원합니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#1f6b45">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/cinema.css">
+</head>
+<body>
+<a class="skiplink" href="#main" data-i18n="skip"></a>
+<div id="mm-header"></div>
+<main id="main" tabindex="-1">
+
+<div class="wrap">
+  <nav class="crumbs" id="crumbs"></nav>
+</div>
+
+<section class="section--tight">
+  <div class="wrap">
+    <div class="shead">
+      <div>
+        <h1 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:0" id="searchTitle"></h1>
+        <p class="muted" id="searchMeta"></p>
+      </div>
+      <span class="spacer"></span>
+      <div class="chiprow" id="scopeChips"></div>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="picks" id="picksHost"></div>
+  </div>
+</section>
+
+</main>
+
+<div id="mm-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/cinema.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/recommend.js"></script>
+<script src="assets/js/search.js"></script>
+</body>
+</html>
